@@ -1,0 +1,23 @@
+package org.example.productservice.models.services.impl;
+
+import lombok.RequiredArgsConstructor;
+import org.example.productservice.exceptions.ProductNotFoundException;
+import org.example.productservice.models.entities.Product;
+import org.example.productservice.models.repositories.ProductRepository;
+import org.example.productservice.models.services.ProductService;
+import org.springframework.stereotype.Service;
+
+import org.springframework.cache.annotation.Cacheable;
+
+@Service
+@RequiredArgsConstructor
+public class ProductServiceImpl implements ProductService {
+    private final ProductRepository productRepository;
+
+    @Override
+    @Cacheable(value = "products", key = "#id")
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+}
